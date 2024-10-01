@@ -1,0 +1,124 @@
+{% extends 'store/main.html' %}
+{% load static %}
+
+{% block content %}
+
+<style>
+    .custom-p {
+        padding: .10rem 2.25rem .10rem .10rem !important;
+    }
+</style>
+<div class="container my-4">
+    <div class="row mb-4 align-items-center">
+        <!-- Mobile Heading -->
+        <div class="col-lg-6">
+            <h2 class="fw-bold">Available Mobiles</h2>
+        </div>
+
+        <!-- Sorting Filter, aligned to the right -->
+        <div class="col-lg-6 text-end">
+            <form method="get" class="d-flex justify-content-end">
+                <label for="sort" class="me-2 fw-bold">Sort by:</label>
+                <select name="sort" id="sort" class="form-select w-auto custom-p" onchange="this.form.submit()">
+                    <option value="" {% if not sort_by %}selected{% endif %}>Featured</option>
+                    <option value="low_to_high" {% if sort_by == 'low_to_high' %}selected{% endif %}>Price: Low to High</option>
+                    <option value="high_to_low" {% if sort_by == 'high_to_low' %}selected{% endif %}>Price: High to Low</option>
+                </select>
+            </form>
+        </div>
+    </div>
+
+    <!-- Products Grid-->
+    <div class="row">
+        {% for product in products %}
+        <div class="col-lg-3">
+            <img class="thumbnail" src="{{ product.image.url }}" alt="{{ product.name }}" style="max-width:100%;">
+            <div class="box-element product mb-3">
+                <h6><strong>{{ product.name }}</strong></h6>
+                <hr>
+
+                <!-- Button to add product to the cart -->
+                {% if user.is_authenticated %}
+                <button
+                        data-product="{{ product.id }}"
+                        data-action="add"
+                        class="btn btn-outline-secondary add-btn update-cart">
+                    Add to Cart
+                </button>
+                {% else %}
+                <a href="{% url 'login' %}" class="btn btn-outline-secondary">
+                    Add to Cart
+                </a>
+                {% endif %}
+
+                <a class="btn btn-outline-success" href="{% url 'views' pk=product.id %}">View</a>
+                <h4 style="display: inline-block; float: right"><strong>${{ product.price }}</strong></h4>
+            </div>
+        </div>
+        {% empty %}
+        <p>No shirts available at the moment.</p>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination controls -->
+    <div class="pagination justify-content-center mt-4">
+        <ul class="pagination">
+
+            <!-- Previous and First Page Links -->
+            {% if products.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page=1" aria-label="First">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ products.previous_page_number }}" aria-label="Previous">
+                    <span aria-hidden="true">&lsaquo;</span>
+                </a>
+            </li>
+            {% else %}
+            <li class="page-item disabled">
+                <a class="page-link" aria-disabled="true">&laquo;</a>
+            </li>
+            <li class="page-item disabled">
+                <a class="page-link" aria-disabled="true">&lsaquo;</a>
+            </li>
+            {% endif %}
+
+            <!-- Numbered Page Links with Ellipses -->
+            {% for num in products.paginator.page_range %}
+            {% if products.number == num %}
+            <li class="page-item active"><a class="page-link">{{ num }}</a></li>
+            {% elif num > products.number|add:'-3' and num < products.number|add:'3' %}
+            <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+            {% elif num == 1 or num == products.paginator.num_pages %}
+            <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+            {% elif num == products.number|add:'-4' or num == products.number|add:'4' %}
+            <li class="page-item disabled"><a class="page-link">...</a></li>
+            {% endif %}
+            {% endfor %}
+
+            <!-- Next and Last Page Links -->
+            {% if products.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ products.next_page_number }}" aria-label="Next">
+                    <span aria-hidden="true">&rsaquo;</span>
+                </a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ products.paginator.num_pages }}" aria-label="Last">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+            {% else %}
+            <li class="page-item disabled">
+                <a class="page-link" aria-disabled="true">&rsaquo;</a>
+            </li>
+            <li class="page-item disabled">
+                <a class="page-link" aria-disabled="true">&raquo;</a>
+            </li>
+            {% endif %}
+        </ul>
+    </div>
+</div>
+{% endblock content %}

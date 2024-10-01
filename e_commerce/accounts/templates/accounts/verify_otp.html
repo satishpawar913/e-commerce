@@ -1,0 +1,62 @@
+{% extends 'store/main.html' %}
+{% load static %}
+{% block content %}
+
+<style>
+    .mt-5 {
+        margin-top: 5rem !important;
+    }
+
+    .toast {
+        position: fixed;
+        top: 60px;
+        right: 20px;
+        z-index: 1050;
+        min-width: 300px;
+        background-color: #28a745;
+        color: white;
+    }
+</style>
+
+<div class="d-flex align-items-center justify-content-center vh-50 mt-5">
+    <form method="post" action="{% url 'verify-otp' %}" class="border p-4 rounded bg-light shadow">
+        {% csrf_token %}
+        <h2 class="text-center">Verify OTP</h2>
+
+        <div class="mb-3">
+            <label for="otp" class="form-label">Enter OTP:</label>
+            <input type="text" name="otp" class="form-control" id="otp" required>
+        </div>
+
+        <div class="text-center">
+            <button type="submit" class="btn btn-primary">Verify OTP</button>
+        </div>
+    </form>
+</div>
+
+{% if messages %}
+<div aria-live="polite" aria-atomic="true" class="toast" role="alert" data-bs-delay="3000">
+    <div class="toast-body">
+        {% for message in messages %}
+        {{ message }}
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+<!-- jQuery and Bootstrap JS (Ensure jQuery is loaded before Bootstrap JS) -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+
+<script>
+    $(document).ready(function() {
+        // Show toast if there are messages
+        var toastElement = $('.toast');
+        if (toastElement.length) {
+            var toast = new bootstrap.Toast(toastElement[0]);
+            toast.show();
+        }
+    });
+</script>
+{% endblock content %}

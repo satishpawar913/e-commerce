@@ -1,0 +1,121 @@
+{% extends 'store/main.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    .col-6 {
+        flex: 0 0 auto;
+        width: 30% !important;
+    }
+    .status-pending {
+        color: orange;
+    }
+    .status-processed {
+        color: blue;
+    }
+    .status-shipped {
+        color: green;
+    }
+    .status-delivered {
+        color: darkgreen;
+    }
+    .status-canceled {
+        color: red;
+    }
+</style>
+<div class="container my-4">
+    <!-- Order Heading and Continue Shopping Button -->
+    <div class="row mb-3">
+        <div class="col-lg-12">
+            <div class="box-element bg-light p-3 rounded shadow-sm">
+                <a class="btn btn-outline-dark" href="{% url 'store' %}">&#x2190; Continue Shopping</a>
+                <br><br>
+            </div>
+        </div>
+    </div>
+
+    <!-- Order Items Table -->
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="box-element bg-light p-3 rounded shadow-sm">
+                <!-- Table Header -->
+                <div class="row border-bottom pb-2 mb-2">
+                    <div class="col-6"><strong>Item</strong></div>
+                    <div class="col-2 text-center"><strong>Price</strong></div>
+                    <div class="col-2 text-center"><strong>Quantity</strong></div>
+                    <div class="col-2 text-center"><strong>Total</strong></div>
+                    <div class="col-2 text-center"><strong>Order Status</strong></div>
+                </div>
+
+                <!-- Orders and Items -->
+                {% for order in orders %}
+                {% for item in order_items %}
+                {% if item.order == order %}
+                <div class="row align-items-center border-bottom py-2">
+                    <!-- Item Image and Name -->
+                    <div class="col-6 d-flex align-items-center">
+                        <img class="img-fluid me-2" src="{{ item.product.imageURL }}" alt="{{ item.product.name }}"
+                             style="max-width: 100px; max-height: 75px; object-fit: cover;">
+                        <span>{{ item.product.name }}</span>
+                    </div>
+
+                    <!-- Price -->
+                    <div class="col-2 text-center">
+                        ${{ item.product.price|floatformat:2 }}
+                    </div>
+
+                    <!-- Quantity Control -->
+                    <div class="col-2 text-center">
+                        <p class="m-0">{{ item.quantity }}</p>
+                    </div>
+
+                    <!-- Total -->
+                    <div class="col-2 text-center">
+                        ${{ item.get_total|floatformat:2 }}
+                    </div>
+
+                    <!-- Order Status -->
+                    <div class="col-2 text-center">
+                        <p class="m-0
+                                    {% if item.status == 'pending' %} status-pending
+                                    {% elif item.status == 'processed' %} status-processed
+                                    {% elif item.status == 'shipped' %} status-shipped
+                                    {% elif item.status == 'delivered' %} status-delivered
+                                    {% elif item.status == 'canceled' %} status-canceled
+                                    {% endif %}">
+                            {{ item.status|capfirst }}
+                        </p>
+                    </div>
+
+                </div>
+                {% endif %}
+                {% endfor %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Example: Log the number of order items to the console
+        let orderItems = document.querySelectorAll('.row.align-items-center.border-bottom.py-2');
+        console.log('Number of order items:', orderItems.length);
+
+        // Example: Check if any items are missing critical data
+        orderItems.forEach(function(item) {
+            let img = item.querySelector('img');
+            let name = item.querySelector('span');
+            let price = item.querySelectorAll('div.col-2.text-center')[0];
+            let quantity = item.querySelectorAll('div.col-2.text-center')[1];
+            let total = item.querySelectorAll('div.col-2.text-center')[2];
+            let status = item.querySelectorAll('div.col-2.text-center')[3]; // Updated index for status
+
+            if (!img || !name || !price || !quantity || !total || !status) {
+                console.error('Missing data in order item:', item);
+            }
+        });
+    });
+</script>
+
+{% endblock content %}

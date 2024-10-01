@@ -1,0 +1,209 @@
+{% extends 'store/main.html' %}
+{% load static %}
+
+{% block content %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #e9ecef;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+            padding: 20px;
+        }
+        .card {
+            width: 100%;
+            max-width: 450px;
+            min-height: 450px;
+            background-color: #f0f8ff;
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 0 25px rgba(0, 0, 0, 0.1);
+        }
+        .card-body {
+            padding: 2rem;
+        }
+        .form-heading {
+            margin-bottom: 1.75rem;
+            font-weight: 800;
+            color: #004085;
+            text-align: center;
+        }
+        label {
+            font-weight: bold;
+            color: #0056b3;
+        }
+        input {
+            padding: 0.75rem 1rem;
+            font-size: 1rem;
+            border-radius: 8px;
+            border: 1px solid #ced4da;
+        }
+        .form-group {
+            margin-bottom: 1.75rem;
+        }
+        .form-control {
+            border-radius: 1.25rem;
+        }
+        .btn-primary {
+            width: 100%;
+            padding: 0.85rem;
+            font-size: 1.2rem;
+            background-color: #0056b3;
+            border: none;
+        }
+        .btn-primary:hover {
+            background-color: #004085;
+        }
+        .errorlist {
+            color: #dc3545;
+            margin-top: 0.5rem;
+        }
+        .form-control.is-invalid {
+            border-color: #dc3545;
+        }
+        .invalid-feedback {
+            color: #dc3545;
+        }
+        .register-link {
+            display: block;
+            text-align: center;
+            margin-top: 1rem;
+            font-size: 1rem;
+        }
+        .register-link a {
+            color: #0056b3;
+            text-decoration: none;
+        }
+        .register-link a:hover {
+            text-decoration: underline;
+        }
+        .otp-link {
+            display: block;
+            text-align: center;
+            margin-top: 1rem;
+            font-size: 1rem;
+        }
+        .otp-link a {
+            color: #28a745;
+            text-decoration: none;
+        }
+        .otp-link a:hover {
+            text-decoration: underline;
+        }
+        .toast-container {
+            position: absolute;
+            top: 60px; /* Adjust based on your navbar height */
+            right: 20px;
+            z-index: 1050; /* Ensure it's above other elements */
+        }
+        .success-message {
+            color: green;
+            font-weight: bold;
+            text-align: right;
+            margin-bottom: 1rem;
+        }
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1050;
+            min-width: 300px;
+            background-color: #28a745;
+            color: white;
+        }
+        .bg-dark {
+           background-color: #4f868c !important;
+        }
+        .card{
+          margin-left: 330px !important;
+        }
+    </style>
+</head>
+<body>
+<div class="card">
+    <div class="card-body">
+        <h2 class="form-heading">Login</h2>
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="form-group">
+                {{ form.username.label_tag }}
+                <input type="text" name="{{ form.username.name }}" id="{{ form.username.id_for_label }}"
+                       class="form-control {% if form.username.errors %}is-invalid{% endif %}"
+                       placeholder="Enter your username">
+                {% for error in form.username.errors %}
+                <div class="invalid-feedback">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <div class="form-group">
+                {{ form.password.label_tag }}
+                <input type="password" name="{{ form.password.name }}" id="{{ form.password.id_for_label }}"
+                       class="form-control {% if form.password.errors %}is-invalid{% endif %}"
+                       placeholder="Enter your password">
+                {% for error in form.password.errors %}
+                <div class="invalid-feedback">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            {% if form.non_field_errors %}
+            <div class="alert alert-danger">
+                <ul class="errorlist">
+                    {% for error in form.non_field_errors %}
+                    <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary">Login</button>
+            </div>
+
+            <div class="register-link">
+                <span>New here? <a href="{% url 'register' %}">Create an account</a></span>
+            </div>
+
+            <div class="otp-link">
+                <span><a href="{% url 'forgot-password' %}">Forgot Password?</a></span>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Toast message for successful registration -->
+{% if messages %}
+<div aria-live="polite" aria-atomic="true" class="toast" role="alert" data-delay="3000">
+    <div class="toast-header">
+        <strong class="mr-auto">Success</strong>
+        <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="toast-body">
+        {% for message in messages %}
+        {{ message }}
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+<!-- Include Bootstrap JS and jQuery for toast functionality -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('.toast').toast('show');
+    });
+</script>
+</body>
+</html>
+{% endblock %}

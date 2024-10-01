@@ -1,0 +1,318 @@
+{% extends 'store/main.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container my-4">
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="box-element bg-light p-4 rounded shadow-sm" id="form-wrapper">
+                <form id="form">
+                    {% csrf_token %}
+                    {% if user.is_authenticated %}
+                    <div id="user-info">
+                        <div class="mb-3">
+                            <input required class="form-control" type="text" name="name" disabled placeholder="Name.."
+                                   value="{{ user.username }}">
+                        </div>
+                        <div class="mb-3">
+                            <input required class="form-control" type="email" name="email" disabled
+                                   placeholder="Email.." value="{{ user.email }}">
+                        </div>
+                    </div>
+                    {% else %}
+                    <div id="user-info">
+                        <div class="mb-3">
+                            <input required class="form-control" type="text" name="name" placeholder="Name..">
+                        </div>
+                        <div class="mb-3">
+                            <input required class="form-control" type="email" name="email" placeholder="Email..">
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <div id="shipping-info">
+                        <hr>
+                        <p class="fw-bold">Shipping Information:</p>
+                        <hr>
+                        <div class="mb-3">
+                            <input id="address" class="form-control" type="text" name="address" placeholder="Address..">
+                            <div id="address-error" class="text-danger mt-1"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            <select id="state" class="form-control" name="state">
+                                <option value="" disabled selected>Select State</option>
+                                <option value="Maharashtra">Maharashtra</option>
+                                <option value="Delhi">Delhi</option>
+                                <option value="Karnataka">Karnataka</option>
+                                <option value="Telangana">Telangana</option>
+                                <option value="Tamil Nadu">Tamil Nadu</option>
+                                <option value="West Bengal">West Bengal</option>
+                                <option value="Gujarat">Gujarat</option>
+                                <option value="Rajasthan">Rajasthan</option>
+                                <option value="Uttar Pradesh">Uttar Pradesh</option>
+                                <option value="Bihar">Bihar</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <select id="city" class="form-control" name="city">
+                                <option value="" disabled selected>Select City</option>
+                                <!-- Cities will be populated based on selected state -->
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <input id="zipcode" class="form-control" type="text" name="zipcode"
+                                   placeholder="Zip code..">
+                            <div id="zipcode-error" class="text-danger mt-1"></div>
+                        </div>
+                    </div>
+                    <hr>
+                    <input id="form-button" class="btn btn-success w-100" type="submit" value="Continue">
+                </form>
+            </div>
+
+            <br>
+            <div class="box-element hidden" id="payment-info">
+                <small>Paypal Options</small>
+                <!--                <div id="paypal-button-container"></div>-->
+                <button id="make-payment" disabled>Make Payment</button>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="box-element bg-light p-4 rounded shadow-sm">
+                <a class="btn btn-outline-dark mb-3" href="{% url 'cart' %}">&#x2190; Back to Cart</a>
+                <hr>
+                <h3>Order Summary</h3>
+                <hr>
+                {% for item in items %}
+                <div class="d-flex align-items-center border-bottom py-2">
+                    <div class="flex-shrink-0 me-3">
+                        <img class="img-fluid" src="{{item.product.imageURL}}" alt="{{item.product.name}}"
+                             style="max-width: 100px; max-height: 75px; object-fit: cover;">
+                    </div>
+                    <div class="flex-grow-1">{{item.product.name}}</div>
+                    <div class="text-center">${{item.product.price|floatformat:2}}</div>
+                    <div class="text-center">x{{item.quantity}}</div>
+                </div>
+                {% endfor %}
+                <h5 class="mt-3">Items: {{order.get_cart_items}}</h5>
+                <h5>Total: ${{order.get_cart_total|floatformat:2}}</h5>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var total = '{{ order.get_cart_total }}';
+    var shipping = '{{ order.shipping }}';
+    var user = '{{ user.is_authenticated }}';
+    var csrftoken = '{{ csrf_token }}';
+
+    // Mapping of states to their respective cities
+    const stateCityMap = {
+        "Maharashtra": ["Mumbai", "Pune", "Nagpur", "Nashik", "Aurangabad"],
+        "Delhi": ["New Delhi", "Delhi"],
+        "Karnataka": ["Bangalore", "Mysore", "Mangalore", "Hubli", "Belgaum"],
+        "Telangana": ["Hyderabad", "Warangal", "Nizamabad", "Karimnagar", "Khammam"],
+        "Tamil Nadu": ["Chennai", "Coimbatore", "Madurai", "Tiruchirappalli", "Salem"],
+        "West Bengal": ["Kolkata", "Siliguri", "Asansol", "Durgapur", "Howrah"],
+        "Gujarat": ["Ahmedabad", "Surat", "Vadodara", "Rajkot", "Bhavnagar"],
+        "Rajasthan": ["Jaipur", "Jodhpur", "Udaipur", "Ajmer", "Bikaner"],
+        "Uttar Pradesh": ["Lucknow", "Kanpur", "Varanasi", "Agra", "Ghaziabad"],
+        "Bihar": ["Patna", "Gaya", "Bhagalpur", "Muzaffarpur", "Darbhanga"]
+    };
+
+    // Function to populate city dropdown based on selected state
+    function populateCities(selectedState) {
+        const citySelect = document.getElementById('city');
+        // Clear existing options
+        citySelect.innerHTML = '<option value="" disabled selected>Select City</option>';
+
+        if (selectedState in stateCityMap) {
+            stateCityMap[selectedState].forEach(function(city) {
+                const option = document.createElement('option');
+                option.value = city;
+                option.textContent = city;
+                citySelect.appendChild(option);
+            });
+        }
+    }
+    // Event listener for state selection
+    document.getElementById('state').addEventListener('change', function() {
+        const selectedState = this.value;
+        populateCities(selectedState);
+        checkShippingInfo(); // Re-validate shipping info after state change
+    });
+
+
+    // Clear the shipping info fields when the page loads
+    window.onload = function() {
+        if (shipping !== 'True') {
+            document.getElementById('shipping-info').style.display = 'block';
+            document.getElementById('address').value = '';
+            document.getElementById('city').value = '';
+            document.getElementById('state').value = '';
+            document.getElementById('zipcode').value = '';
+        } else {
+            document.getElementById('shipping-info').style.display = 'none';
+        }
+    };
+
+    function validateField(id, condition, errorMessage) {
+        var field = document.getElementById(id);
+        var errorElement = document.getElementById(id + '-error');
+        if (condition) {
+            errorElement.textContent = '';
+            return true;
+        } else {
+            errorElement.textContent = errorMessage;
+            return false;
+        }
+    }
+
+    function checkShippingInfo() {
+        var address = document.getElementById('address').value;
+        var zipcode = document.getElementById('zipcode').value;
+
+        var isAddressValid = validateField('address', address.length > 0 && !address.startsWith(' '), 'Address cannot be empty and cannot start with a space');
+        var isZipcodeValid = validateField('zipcode', /^\d{6}$/.test(zipcode), 'Zip code must be exactly 6 digits and contain only numbers');
+
+        var formButton = document.getElementById('form-button');
+        var makePaymentButton = document.getElementById('make-payment');
+
+        if (isAddressValid && isZipcodeValid) {
+            formButton.disabled = false;
+            makePaymentButton.disabled = false;
+        } else {
+            formButton.disabled = true;
+            makePaymentButton.disabled = true;
+        }
+    }
+
+    // Handle form input and check if shipping info is complete
+    document.getElementById('address').addEventListener('input', checkShippingInfo);
+    document.getElementById('zipcode').addEventListener('input', checkShippingInfo);
+    document.getElementById('city').addEventListener('change', checkShippingInfo);
+    document.getElementById('state').addEventListener('change', checkShippingInfo);
+
+    document.getElementById('form').addEventListener('submit', function (e) {
+        e.preventDefault();
+        console.log('Form Submitted...');
+        document.getElementById('form-button').classList.add("d-none");
+        document.getElementById('payment-info').classList.remove("hidden");
+        if (shipping !== 'False') {
+            checkShippingInfo();
+        }
+    });
+
+    document.getElementById('make-payment').addEventListener('click', function(e) {
+        submitFormData();
+    });
+
+    function submitFormData() {
+        console.log('Payment button clicked');
+
+        var userFormData = {
+            'name': null,
+            'email': null,
+            'total': total,
+        };
+
+        var shippingInfo = {
+            'address': document.getElementById('address').value,
+            'city': document.getElementById('city').value,
+            'state': document.getElementById('state').value,
+            'zipcode': document.getElementById('zipcode').value,
+        };
+
+        if (user === 'False') {
+            userFormData.name = document.querySelector('input[name="name"]').value;
+            userFormData.email = document.querySelector('input[name="email"]').value;
+        }
+
+        console.log('Shipping Info:', shippingInfo);
+        console.log('User Info:', userFormData);
+
+        var url = "/process-order/";
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken,
+            },
+            body: JSON.stringify({
+                'form': userFormData,
+                'shipping': shippingInfo,
+            }),
+        })
+        .then((response) => response.json())
+        .then((data) => {
+            console.log('Success:', data);
+
+            if (data.transaction_id) {
+                alert(`Payment Done. Transaction ID: ${data.transaction_id}`);
+            } else {
+                alert('Payment Done. No transaction ID available.');
+            }
+
+            // Clear the cart and redirect
+            cart = {};
+            document.cookie = 'cart=' + JSON.stringify(cart) + ";domain=;path=/";
+
+            window.location.href = "{% url 'orders' %}";
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+            alert('Payment failed.');
+        });
+    }
+
+    // Add shipping info to user every time a new address is provided
+    function addShippingInfo() {
+        var shippingInfo = {
+            'address': document.getElementById('address').value,
+            'city': document.getElementById('city').value,
+            'state': document.getElementById('state').value,
+            'zipcode': document.getElementById('zipcode').value,
+        };
+
+        // Here you might want to send a request to your backend to save the shipping info
+        var url = "/add_shipping_info/";
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken,
+            },
+            body: JSON.stringify({
+                'shipping': shippingInfo,
+            }),
+        })
+        .then((response) => response.json())
+        .then((data) => {
+            console.log('Shipping Info Added:', data);
+        })
+        .catch((error) => {
+            console.error('Error adding shipping info:', error);
+        });
+    }
+
+    // Call addShippingInfo function when user changes the shipping address
+    document.getElementById('address').addEventListener('change', addShippingInfo);
+    document.getElementById('city').addEventListener('change', addShippingInfo);
+    document.getElementById('state').addEventListener('change', addShippingInfo);
+    document.getElementById('zipcode').addEventListener('change', addShippingInfo);
+
+    // This function can be called when items are added to the cart as well
+    function addItemToCart(itemId) {
+        // Logic for adding an item to the cart...
+        console.log('Item added to cart:', itemId);
+        // After adding an item, you might want to check shipping info
+        checkShippingInfo();
+    }
+</script>
+
+
+{% endblock %}

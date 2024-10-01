@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #e9ecef;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+            padding: 20px;
+        }
+        .card {
+            width: 100%;
+            max-width: 450px;
+            min-height: 550px;
+            background-color: #f0f8ff; /* Light blue background */
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 0 25px rgba(0, 0, 0, 0.1);
+        }
+        .card-body {
+            padding: 2rem;
+        }
+        .form-heading {
+            margin-bottom: 1.75rem;
+            font-weight: 800;
+            color: #004085; /* Dark blue for heading */
+            text-align: center;
+        }
+        label {
+            font-weight: bold;
+            color: #0056b3; /* Blue for labels */
+        }
+        input, select {
+            padding: 0.75rem 1rem;
+            font-size: 1rem;
+            border-radius: 8px;
+            border: 1px solid #ced4da;
+        }
+        .form-group {
+            margin-bottom: 1.75rem;
+        }
+        .form-control {
+            border-radius: 1.25rem;
+        }
+        .btn-primary {
+            width: 100%;
+            padding: 0.85rem;
+            font-size: 1.2rem;
+            background-color: #0056b3; /* Blue button color */
+            border: none;
+        }
+        .btn-primary:hover {
+            background-color: #004085; /* Darker blue on hover */
+        }
+        .errorlist {
+            color: #dc3545;
+            margin-top: 0.5rem;
+        }
+        .form-control.is-invalid {
+            border-color: #dc3545;
+        }
+        .invalid-feedback {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="card-body">
+            <h2 class="form-heading">Register</h2>
+            <form id="registrationForm" method="post">
+                {% csrf_token %}
+
+                <div class="form-group">
+                    {{ form.username.label_tag }}
+                    <input type="text" name="{{ form.username.name }}" id="{{ form.username.id_for_label }}"
+                           class="form-control" placeholder="Enter your username">
+                    <div class="invalid-feedback" id="usernameError">Username must only contain alphabetical characters and no spaces.</div>
+                </div>
+
+                <div class="form-group">
+                    {{ form.email.label_tag }}
+                    <input type="email" name="{{ form.email.name }}" id="{{ form.email.id_for_label }}"
+                           class="form-control" placeholder="Enter your email">
+                    <div class="invalid-feedback" id="emailError">Please enter a valid email address.</div>
+                </div>
+
+                <div class="form-group">
+                    {{ form.password1.label_tag }}
+                    <input type="password" name="{{ form.password1.name }}" id="{{ form.password1.id_for_label }}"
+                           class="form-control" placeholder="Enter your password">
+                    <div class="invalid-feedback" id="password1Error">Password is required.</div>
+                </div>
+
+                <div class="form-group">
+                    <label>Confirm Password:</label>
+                    <input type="password" name="{{ form.password2.name }}" id="{{ form.password2.id_for_label }}"
+                           class="form-control" placeholder="Confirm your password">
+                    <div class="invalid-feedback" id="password2Error">Passwords must match.</div>
+                </div>
+
+                <div class="form-group">
+                    {{ form.role.label_tag }}
+                    <select name="{{ form.role.name }}" id="{{ form.role.id_for_label }}"
+                            class="form-control">
+                        {% for value, label in form.role.field.choices %}
+                            <option value="{{ value }}" {% if value == form.role.value %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                    <div class="invalid-feedback" id="roleError">Please select a role.</div>
+                </div>
+
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">Register</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        function validateUsername() {
+            const username = document.getElementById('id_username');
+            const error = document.getElementById('usernameError');
+            const alphaPattern = /^[a-zA-Z]+$/; // Regular expression for only alphabetical characters
+
+            if (!alphaPattern.test(username.value.trim())) {
+                username.classList.add('is-invalid');
+                error.textContent = 'Username must only contain alphabetical characters and no spaces.';
+                error.style.display = 'block';
+                return false;
+            } else {
+                username.classList.remove('is-invalid');
+                error.style.display = 'none';
+                return true;
+            }
+        }
+
+        function validateEmail() {
+            const email = document.getElementById('id_email');
+            const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]+$/;
+            const error = document.getElementById('emailError');
+            if (!emailPattern.test(email.value.trim())) {
+                email.classList.add('is-invalid');
+                error.style.display = 'block';
+                return false;
+            } else {
+                email.classList.remove('is-invalid');
+                error.style.display = 'none';
+                return true;
+            }
+        }
+
+        function validatePassword1() {
+            const password1 = document.getElementById('id_password1');
+            const error = document.getElementById('password1Error');
+            if (password1.value.trim() === '') {
+                password1.classList.add('is-invalid');
+                error.style.display = 'block';
+                return false;
+            } else {
+                password1.classList.remove('is-invalid');
+                error.style.display = 'none';
+                return true;
+            }
+        }
+
+        function validatePassword2() {
+            const password1 = document.getElementById('id_password1');
+            const password2 = document.getElementById('id_password2');
+            const error = document.getElementById('password2Error');
+            if (password2.value.trim() !== password1.value.trim()) {
+                password2.classList.add('is-invalid');
+                error.style.display = 'block';
+                return false;
+            } else {
+                password2.classList.remove('is-invalid');
+                error.style.display = 'none';
+                return true;
+            }
+        }
+
+        function validateRole() {
+            const role = document.getElementById('id_role');
+            const error = document.getElementById('roleError');
+            if (role.value === '') {
+                role.classList.add('is-invalid');
+                error.style.display = 'block';
+                return false;
+            } else {
+                role.classList.remove('is-invalid');
+                error.style.display = 'none';
+                return true;
+            }
+        }
+
+        document.getElementById('registrationForm').addEventListener('submit', function(event) {
+            let valid = true;
+
+            if (!validateUsername()) valid = false;
+            if (!validateEmail()) valid = false;
+            if (!validatePassword1()) valid = false;
+            if (!validatePassword2()) valid = false;
+            if (!validateRole()) valid = false;
+
+            if (!valid) {
+                event.preventDefault();
+            }
+        });
+
+        document.getElementById('id_username').addEventListener('input', validateUsername);
+        document.getElementById('id_email').addEventListener('input', validateEmail);
+        document.getElementById('id_password1').addEventListener('input', validatePassword1);
+        document.getElementById('id_password2').addEventListener('input', validatePassword2);
+        document.getElementById('id_role').addEventListener('change', validateRole);
+    </script>
+</body>
+</html>

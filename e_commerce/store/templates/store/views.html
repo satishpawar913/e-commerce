@@ -1,0 +1,54 @@
+{% extends 'store/main.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container my-4">
+    <a href="javascript:history.back()" class="btn btn-outline-primary mb-4">Back to Products</a>
+
+    <h2 class="mb-4 fw-bold">Product Details</h2>
+
+    <!-- Product Detail Container -->
+    <div class="row">
+        <!-- Product Image Section -->
+        <div class="col-md-5">
+            {% if product.image %}
+            <img class="img-fluid" src="{{ product.image.url }}" alt="{{ product.name }}">
+            {% else %}
+            <img class="img-fluid" src="{% static 'images/placeholder.png' %}" alt="No image available">
+            {% endif %}
+        </div>
+
+        <!-- Product Information Section -->
+        <div class="col-md-7">
+            <h3>{{ product.brand }}</h3>
+            <p><strong>Be the first to Review this product</strong></p>
+            <p class="text-success"><strong>₹{{ product.price }}</strong>
+                <del>₹{{ product.original_price }}</del>
+                <span class="text-danger">{{ product.discount_percentage }}% off</span></p>
+            <p>Status: <span class="text-warning">Coming Soon</span></p>
+
+            <h4>Available Offers</h4>
+            <ul>
+                <li>Bank Offer: 5% Unlimited Cashback on Flipkart Axis Bank Credit Card</li>
+                <li>Bank Offer: 10% off up to ₹1,000 on HDFC Bank Credit Card Transactions. Min Txn Value: ₹7,500</li>
+                <li>Bank Offer: 10% off up to ₹1,500 on HDFC Bank Credit Card EMI Transactions. Min Txn Value: ₹7,500
+                </li>
+                <li>Partner Offer: Make a purchase and enjoy a surprise cashback/ coupon that you can redeem later!</li>
+            </ul>
+
+            {% if user.is_authenticated %}
+            <button
+                    data-product="{{ product.id }}"
+                    data-action="add"
+                    class="btn btn-outline-secondary add-btn update-cart">
+                Add to Cart
+            </button>
+            {% else %}
+            <a href="{% url 'login' %}" class="btn btn-outline-secondary">
+                Add to Cart
+            </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock content %}

@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+
+<head>
+    <title>Search Results - Ecom</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
+
+    <style>
+        .dropdown-content {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+        }
+
+        .dropdown-menu {
+            width: 250px !important;
+        }
+
+        .dropdown-col {
+            flex: 1;
+            margin-right: 10px;
+        }
+
+        .dropdown-col:last-child {
+            margin-right: 0;
+        }
+
+        .dropdown-divider {
+            border-left: 1px solid #ccc;
+            height: auto;
+            margin: 0 15px;
+        }
+
+        .custom {
+            margin-right: 1rem !important;
+            width: 550px !important;
+        }
+
+        .custom-dp {
+            top: 100%;
+            margin-top: .125rem;
+            width: 69px !important;
+            min-width: max-content;
+            left: 1245px !important;
+        }
+        .electronics{
+           width: 70px !important;
+        }
+
+        .dropdown-menu[data-bs-popper] {
+            top: 100%;
+            margin-top: .125rem;
+            width: 69px;
+            min-width: max-content;
+        }
+
+        .card {
+            height: 100%;
+        }
+
+        .card-body {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100%;
+        }
+
+        .card-img-top {
+            object-fit: cover;
+            height: 200px;
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="{% url 'store' %}">
+            <img src="{% static 'images/ecomlogo1.jpg' %}" alt="Ecommerce Logo" class="navbar-logo">
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <!-- Fashion Dropdown -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link" href="#" id="fashionDropdown" role="button" data-bs-toggle="dropdown"
+                       aria-expanded="false">
+                        Fashion <i class="fas fa-chevron-down icon-down"></i>
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="fashionDropdown" style="width: 400px;">
+                        <div class="dropdown-content">
+                            <!-- Men's Subcategory -->
+                            <div class="dropdown-col">
+                                <li class="dropdown-submenu">
+                                    <a class="dropdown-item dropdown-toggle fw-bold" href="javascript:void(0);"
+                                       id="mensDropdown" role="button"
+                                       data-bs-toggle="dropdown" aria-expanded="false">
+                                        Mens
+                                    </a>
+                                    <ul class="list-unstyled">
+                                        <li><a class="dropdown-item" href="{% url 'm_shirts' %}">Shirts</a></li>
+                                        <li><a class="dropdown-item" href="{% url 'm_tshirt' %}">T-Shirts</a></li>
+                                        <li><a class="dropdown-item" href="{% url 'm_jeans' %}">Jeans</a></li>
+                                        <li><a class="dropdown-item" href="{% url 'm_hoodies' %}">Hoodies</a></li>
+                                        <li><a class="dropdown-item" href="{% url 'm_shoes' %}">Shoes</a></li>
+                                    </ul>
+                                </li>
+                            </div>
+
+                            <!-- Vertical Divider -->
+                            <div class="dropdown-divider"></div>
+
+                            <!-- Women's Subcategory -->
+                            <div class="dropdown-col">
+                                <li class="dropdown-submenu">
+                                    <a class="dropdown-item dropdown-toggle fw-bold" href="javascript:void(0);"
+                                       id="womensDropdown" role="button"
+                                       data-bs-toggle="dropdown" aria-expanded="false">
+                                        Womens
+                                    </a>
+                                    <ul class="list-unstyled">
+                                        <li><a class="dropdown-item" href="{% url 'w_shirts' %}">Kurtis</a></li>
+                                        <li><a class="dropdown-item" href="{% url 'w_tshirt' %}">T-Shirts</a></li>
+                                        <li><a class="dropdown-item" href="{% url 'w_jeans' %}">Jeans</a></li>
+                                        <li><a class="dropdown-item" href="{% url 'w_hoodies' %}">Hoodies</a></li>
+                                        <li><a class="dropdown-item" href="{% url 'w_shoes' %}">Shoes</a></li>
+                                    </ul>
+                                </li>
+                            </div>
+                        </div>
+                    </ul>
+                </li>
+
+
+                <!-- Electronics Dropdown -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link" href="#" id="electronicsDropdown" role="button" data-bs-toggle="dropdown"
+                       aria-expanded="false">
+                        Electronics <i class="fas fa-chevron-down icon-down"></i>
+                    </a>
+                    <ul class="dropdown-menu electronics" aria-labelledby="electronicsDropdown">
+                        <li><a class="dropdown-item" href="{% url 'laptops' %}">Laptops</a></li>
+                        <li><a class="dropdown-item" href="{% url 'smartwatch' %}">Smartwatch</a></li>
+                        <li><a class="dropdown-item" href="{% url 'headphones' %}">Headphones</a></li>
+                        <li><a class="dropdown-item" href="{% url 'refrigerator' %}">Refrigerator</a></li>
+                        <li><a class="dropdown-item" href="{% url 'camera' %}">Camera</a></li>
+
+                    </ul>
+                </li>
+
+
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'mobiles' %}">Mobiles</a>
+                </li>
+            </ul>
+            <div class="d-flex align-items-center">
+                <!-- Search Bar -->
+                <form class="d-flex me-2" method="GET" action="{% url 'search' %}">
+                    <div class="input-group">
+                        <input class="form-control custom" type="search" name="q" id="searchInput"
+                               placeholder="Search by brand" aria-label="Search" autocomplete="off">
+                    </div>
+                    <div id="searchResults"></div>
+                </form>
+
+                {% if user.is_authenticated %}
+                <a class="nav-link satish" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown"
+                   aria-expanded="false">
+                    {{ user.username }} <i class="fas fa-chevron-down icon-down"></i>
+                </a>
+                <ul class="dropdown-menu custom-dp" aria-labelledby="profileDropdown">
+                    <li><a class="dropdown-item" href="{% url 'orders' %}">My Orders</a></li>
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
+                    <li><a class="dropdown-item" href="{% url 'profile' %}">Profile</a></li>
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
+                    <li><a class="dropdown-item" href="{% url 'change-password' %}">Change Password</a></li>
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
+                    <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
+                </ul>
+                {% else %}
+                <a href="{% url 'login' %}" class="btn btn-warning">Login</a>
+                {% endif %}
+
+                <!-- Cart Button -->
+                <a href="{% if user.is_authenticated %}{% url 'cart' %}{% else %}{% url 'login' %}{% endif %}"
+                   class="ms-3 position-relative">
+                    <img id="cart-icon" src="{% static 'images/cart.png' %}" alt="Cart">
+                    <span id="cart-total"
+                          class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                        {{ cartItems }}
+                    </span>
+                </a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+
+<!-- Page Content -->
+<!-- Page Content -->
+<div class="container my-4">
+    <h2 class="mb-4 fw-bold">Search Results</h2>
+    <div class="row">
+        {% for product in products %}
+        <div class="col-lg-3">
+            <img class="thumbnail" src="{{ product.image.url }}" alt="{{ product.name }}" style="max-width:100%;">
+            <div class="box-element product mb-3">
+                <h6><strong>{{ product.name }}</strong></h6>
+                <hr>
+
+                <!-- Button to add product to the cart -->
+                {% if user.is_authenticated %}
+                <button
+                        data-product="{{ product.id }}"
+                        data-action="add"
+                        class="btn btn-outline-secondary add-btn update-cart">
+                    Add to Cart
+                </button>
+                {% else %}
+                <a href="{% url 'login' %}" class="btn btn-outline-secondary">
+                    Add to Cart
+                </a>
+                {% endif %}
+
+                <a class="btn btn-outline-success" href="{% url 'views' pk=product.id %}">View</a>
+                <h4 style="display: inline-block; float: right"><strong>${{ product.price }}</strong></h4>
+            </div>
+        </div>
+        {% empty %}
+        <p>No search results found.</p>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination controls -->
+    <div class="pagination justify-content-center mt-4">
+        <ul class="pagination">
+
+            <!-- Previous and First Page Links -->
+            {% if products.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?q={{ query|urlencode }}&page=1" aria-label="First">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?q={{ query|urlencode }}&page={{ products.previous_page_number }}"
+                   aria-label="Previous">
+                    <span aria-hidden="true">&lsaquo;</span>
+                </a>
+            </li>
+            {% else %}
+            <li class="page-item disabled">
+                <a class="page-link" aria-disabled="true">&laquo;</a>
+            </li>
+            <li class="page-item disabled">
+                <a class="page-link" aria-disabled="true">&lsaquo;</a>
+            </li>
+            {% endif %}
+
+            <!-- Numbered Page Links with Ellipses -->
+            {% for num in products.paginator.page_range %}
+            {% if products.number == num %}
+            <li class="page-item active"><a class="page-link">{{ num }}</a></li>
+            {% elif num > products.number|add:'-3' and num < products.number|add:'3' %}
+            <li class="page-item"><a class="page-link" href="?q={{ query|urlencode }}&page={{ num }}">{{ num }}</a></li>
+            {% elif num == 1 or num == products.paginator.num_pages %}
+            <li class="page-item"><a class="page-link" href="?q={{ query|urlencode }}&page={{ num }}">{{ num }}</a></li>
+            {% elif num == products.number|add:'-4' or num == products.number|add:'4' %}
+            <li class="page-item disabled"><a class="page-link">...</a></li>
+            {% endif %}
+            {% endfor %}
+
+            <!-- Next and Last Page Links -->
+            {% if products.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?q={{ query|urlencode }}&page={{ products.next_page_number }}"
+                   aria-label="Next">
+                    <span aria-hidden="true">&rsaquo;</span>
+                </a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?q={{ query|urlencode }}&page={{ products.paginator.num_pages }}"
+                   aria-label="Last">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+            {% else %}
+            <li class="page-item disabled">
+                <a class="page-link" aria-disabled="true">&rsaquo;</a>
+            </li>
+            <li class="page-item disabled">
+                <a class="page-link" aria-disabled="true">&raquo;</a>
+            </li>
+            {% endif %}
+        </ul>
+    </div>
+</div>
+
+<!-- Footer -->
+<footer class="bg-dark text-white text-center fixed-bottom">
+    <div class="container py-3">
+        <p class="mb-0">© 2024 Ecom. All rights reserved.</p>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+<script>
+    document.getElementById('searchInput').addEventListener('input', function() {
+        const query = this.value;
+
+        if (query.length > 0) {
+            fetch(`/search/?q=${query}`) // Update this URL based on your routing
+                .then(response => response.json())
+                .then(data => {
+                    const resultsDiv = document.getElementById('searchResults');
+                    resultsDiv.innerHTML = '';
+                    data.forEach(item => {
+                        const div = document.createElement('div');
+                        div.textContent = item.name; // Assuming item has a 'name' property
+                        resultsDiv.appendChild(div);
+                    });
+                });
+        } else {
+            document.getElementById('searchResults').innerHTML = '';
+        }
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,171 @@
+{% extends 'store/main.html' %}
+{% load static %}
+
+{% block content %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Profile</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #e9ecef;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+            padding: 20px;
+        }
+        .card {
+            width: 100%;
+            max-width: 450px;
+            min-height: 400px;
+            background-color: #f0f8ff;
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 0 25px rgba(0, 0, 0, 0.1);
+        }
+        .card-body {
+            padding: 2rem;
+        }
+        .form-heading {
+            margin-bottom: 1.75rem;
+            font-weight: 800;
+            color: #004085;
+            text-align: center;
+        }
+        label {
+            font-weight: bold;
+            color: #0056b3;
+        }
+        input, select {
+            padding: 0.75rem 1rem;
+            font-size: 1rem;
+            border-radius: 8px;
+            border: 1px solid #ced4da;
+        }
+        .form-group {
+            margin-bottom: 1.75rem;
+        }
+        .form-control {
+            border-radius: 1.25rem;
+        }
+        .btn-primary {
+            width: 100%;
+            padding: 0.85rem;
+            font-size: 1.2rem;
+            background-color: #0056b3;
+            border: none;
+        }
+        .btn-primary:hover {
+            background-color: #004085;
+        }
+        .error-message {
+            color: red;
+            font-size: 0.9rem;
+        }
+        .bg-dark {
+           background-color: #4f868c !important;
+        }
+        .card{
+          margin-left: 330px !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="card-body">
+            <h2 class="form-heading">Edit Profile</h2>
+            <form method="post" id="editProfileForm">
+                {% csrf_token %}
+
+                <div class="form-group">
+                    {{ form.username.label_tag }}
+                    <input type="text" name="username" id="{{ form.username.id_for_label }}"
+                           class="form-control" placeholder="Enter your username" value="{{ form.username.value|default:'' }}">
+                    <div class="error-message" id="usernameError"></div>
+                </div>
+
+                <div class="form-group">
+                    {{ form.first_name.label_tag }}
+                    <input type="text" name="first_name" id="{{ form.first_name.id_for_label }}"
+                           class="form-control" placeholder="Enter your first name" value="{{ form.first_name.value|default:'' }}">
+                    <div class="error-message" id="firstNameError"></div>
+                </div>
+
+                <div class="form-group">
+                    {{ form.last_name.label_tag }}
+                    <input type="text" name="last_name" id="{{ form.last_name.id_for_label }}"
+                           class="form-control" placeholder="Enter your last name" value="{{ form.last_name.value|default:'' }}">
+                    <div class="error-message" id="lastNameError"></div>
+                </div>
+
+                <div class="form-group">
+                    {{ form.email.label_tag }}
+                    <input type="email" name="email" id="{{ form.email.id_for_label }}"
+                           class="form-control" placeholder="Enter your email" value="{{ form.email.value|default:'' }}" disabled>
+                    <div class="error-message" id="emailError"></div>
+                </div>
+
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        document.getElementById('editProfileForm').addEventListener('submit', function(event) {
+            let valid = true;
+
+            // Clear previous error messages
+            document.getElementById('usernameError').innerText = '';
+            document.getElementById('firstNameError').innerText = '';
+            document.getElementById('lastNameError').innerText = '';
+            document.getElementById('emailError').innerText = '';
+
+            // Validate username
+            const username = document.getElementById('{{ form.username.id_for_label }}').value;
+            const usernameRegex = /^[A-Za-z]+$/; // Allow only alphabetical characters
+            if (!usernameRegex.test(username)) {
+                document.getElementById('usernameError').innerText = 'Username must only contain alphabetical characters and no spaces.';
+                valid = false;
+            }
+
+            // Validate first name
+            const firstName = document.getElementById('{{ form.first_name.id_for_label }}').value;
+            const firstNameRegex = /^[A-Za-z][A-Za-z\s]*$/; // Allow only alphabetical characters, first char must be letter
+            if (!firstNameRegex.test(firstName) || firstName.startsWith(' ')) {
+                document.getElementById('firstNameError').innerText = 'First name must only contain alphabetical characters and cannot start with a space.';
+                valid = false;
+            }
+
+            // Validate last name
+            const lastName = document.getElementById('{{ form.last_name.id_for_label }}').value;
+            const lastNameRegex = /^[A-Za-z][A-Za-z\s]*$/; // Allow only alphabetical characters, first char must be letter
+            if (!lastNameRegex.test(lastName) || lastName.startsWith(' ')) {
+                document.getElementById('lastNameError').innerText = 'Last name must only contain alphabetical characters and cannot start with a space.';
+                valid = false;
+            }
+
+            // Validate email
+            const email = document.getElementById('{{ form.email.id_for_label }}').value;
+            const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]+$/;
+            if (!emailRegex.test(email)) {
+                document.getElementById('emailError').innerText = 'Email must be in a valid format and cannot have numbers or spaces after the last dot.';
+                valid = false;
+            }
+
+            // Prevent form submission if validation fails
+            if (!valid) {
+                event.preventDefault();
+            }
+        });
+    </script>
+</body>
+</html>
+{% endblock %}

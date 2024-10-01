@@ -1,0 +1,100 @@
+{% extends 'store/main.html' %}
+{% load static %}
+
+{% block content %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #e9ecef;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+            padding: 20px;
+        }
+        .card {
+            width: 100%;
+            max-width: 450px;
+            min-height: 350px;
+            background-color: #f0f8ff;
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 0 25px rgba(0, 0, 0, 0.1);
+        }
+        .card-body {
+            padding: 2rem;
+        }
+        .form-heading {
+            margin-bottom: 1.75rem;
+            font-weight: 800;
+            color: #004085;
+            text-align: center;
+        }
+        label {
+            font-weight: bold;
+            color: #0056b3;
+        }
+        .btn-primary {
+            width: 100%;
+            padding: 0.85rem;
+            font-size: 1.2rem;
+            background-color: #0056b3;
+            border: none;
+        }
+        .btn-primary:hover {
+            background-color: #004085;
+        }
+        .bg-dark {
+           background-color: #4f868c !important;
+        }
+        .card{
+          margin-left: 330px !important;
+        }
+    </style>
+</head>
+<body>
+<div class="card">
+    <div class="card-body">
+        <h2 class="form-heading">Profile</h2>
+
+        <div class="form-group">
+            <label>Username:</label>
+            <p>{{ request.user.username }}</p>
+        </div>
+
+        <div class="form-group">
+            <label>First name:</label>
+            <p>{{ request.user.first_name }}</p>
+        </div>
+
+        <div class="form-group">
+            <label>Last name:</label>
+            <p>{{ request.user.last_name }}</p>
+        </div>
+
+        <div class="form-group">
+            <label>Email:</label>
+            <p>{{ request.user.email }}</p>
+        </div>
+
+        <div class="form-group">
+            <a href="{% url 'edit-profile' %}" class="btn btn-primary">Edit Profile</a>
+        </div>
+        <div class="form-group">
+            <a href="{% url 'store' %}" class="btn btn-secondary">Back to store</a>
+        </div>
+
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
+{% endblock %}

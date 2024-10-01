@@ -1,0 +1,112 @@
+{% extends 'store/main.html' %}
+{% load static %}
+{% block content %}
+<div class="container my-4">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="box-element bg-light p-3 rounded shadow-sm">
+                <a class="btn btn-outline-dark" href="{% url 'store' %}">&#x2190; Continue Shopping</a>
+                <br><br>
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th><h5>Items: <strong>{{ order.get_cart_items }}</strong></h5></th>
+                        <th><h5>Total: <strong>${{ order.get_cart_total|floatformat:2 }}</strong></h5></th>
+                        <th>
+                            <a class="btn btn-success float-end {% if order.get_cart_items == 0 %}disabled{% endif %}"
+                               href="{% url 'checkout' %}">
+                                Checkout
+                            </a>
+                        </th>
+                    </tr>
+                    </thead>
+                </table>
+            </div>
+
+            <br>
+            <div class="box-element bg-light p-3 rounded shadow-sm">
+                <!-- Table Header -->
+                <div class="row border-bottom pb-2 mb-2">
+                    <div class="col-5"><strong>Item</strong></div>
+                    <div class="col-2 text-center"><strong>Price</strong></div>
+                    <div class="col-2 text-center"><strong>Quantity</strong></div>
+                    <div class="col-2 text-center"><strong>Total</strong></div>
+                    <div class="col-1 text-center"><strong>Action</strong></div>
+                </div>
+
+                <!-- Cart Items -->
+                {% for item in items %}
+                <div class="row align-items-center border-bottom py-2">
+                    <!-- Item Image and Name -->
+                    <div class="col-5 d-flex align-items-center">
+                        <img class="img-fluid me-2" src="{{ item.product.imageURL }}" alt="{{ item.product.name }}"
+                             style="max-width: 100px; max-height: 75px; object-fit: cover;">
+                        <span>{{ item.product.name }}</span>
+                    </div>
+
+                    <!-- Price -->
+                    <div class="col-2 text-center">
+                        ${{ item.product.price|floatformat:2 }}
+                    </div>
+
+                    <!-- Quantity Control -->
+                    <div class="col-2 text-center">
+                        <div class="d-flex align-items-center justify-content-center">
+                            <p class="m-0">{{ item.quantity }}</p>
+                            <div class="d-flex flex-column ms-2 text-center" style="font-size: 0.85rem;">
+                                <img data-product="{{ item.product.id }}" data-action="add"
+                                     class="chg-quantity update-cart"
+                                     src="{% static 'images/arrow-up.png' %}" alt="Increase quantity"
+                                     style="width: 15px; height: 15px; cursor: pointer; margin-bottom: 5px;">
+                                <img data-product="{{ item.product.id }}" data-action="remove"
+                                     class="chg-quantity update-cart"
+                                     src="{% static 'images/arrow-down.png' %}" alt="Decrease quantity"
+                                     style="width: 15px; height: 15px; cursor: pointer; margin-top: 5px;">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Total -->
+                    <div class="col-2 text-center">
+                        ${{ item.get_total|floatformat:2 }}
+                    </div>
+
+                    <!-- Remove Item Button -->
+                    <div class="col-1 text-center">
+                        <button class="btn btn-dark btn-sm remove-item" data-id="{{ item.product.id }}">Remove</button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.querySelectorAll('.remove-item').forEach(button => {
+    button.addEventListener('click', function() {
+        const productId = this.getAttribute('data-id');
+        fetch('/update_item/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken,
+            },
+            body: JSON.stringify({
+                'productId': productId,
+                'action': 'remove_all'  // Change this action
+            }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Success:', data);
+            location.reload(); // Reload the page to update the cart
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+        });
+    });
+});
+</script>
+
+{% endblock content %}
